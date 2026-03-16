@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
+import { Session } from "next-auth"
 import { auth } from "@/auth"
 
 type AuthedHandler = (
   req: NextRequest,
-  session: NonNullable<Awaited<ReturnType<typeof auth>>>
+  session: Session & { user: NonNullable<Session["user"]> }
 ) => Promise<NextResponse>
 
 /**

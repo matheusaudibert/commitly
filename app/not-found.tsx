@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 
 export default function NotFound() {
   return (
@@ -11,9 +11,9 @@ export default function NotFound() {
       <p className="mb-8 max-w-sm text-sm text-muted-foreground leading-relaxed">
         Essa página não existe ou foi removida.
       </p>
-      <Button asChild>
-        <Link href="/">Voltar para o início</Link>
-      </Button>
+      <Link href="/" className={buttonVariants()}>
+        Voltar para o início
+      </Link>
     </main>
   )
 }
