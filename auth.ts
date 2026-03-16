@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/db"
 import { User } from "@/lib/models/user"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   providers: [
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID!,
