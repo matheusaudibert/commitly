@@ -17,7 +17,7 @@ interface SetupPageProps {
 
 export function SetupPage({ username, avatarUrl }: SetupPageProps) {
   const router = useRouter()
-  const [repoName, setRepoName] = useState("commitly")
+  const [repoName, setRepoName] = useState("commits")
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [fieldError, setFieldError] = useState<string | null>(null)
@@ -140,7 +140,7 @@ export function SetupPage({ username, avatarUrl }: SetupPageProps) {
                 value={repoName}
                 onChange={(e) => { setRepoName(e.target.value); setFieldError(null) }}
                 onKeyDown={(e) => e.key === "Enter" && canSubmit && handleCreate()}
-                placeholder="commitly"
+                placeholder="commits"
                 disabled={loading || done}
                 className="flex-1 bg-transparent text-foreground outline-none placeholder:text-muted-foreground/50"
                 maxLength={100}

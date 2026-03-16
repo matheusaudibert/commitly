@@ -44,16 +44,30 @@ export async function GET() {
   // Commitly-tracked commits (via dashboard)
   const commitlyTotal = await Commit.countDocuments({ githubId: session.user.githubId })
 
-  // Real GitHub data
+  // Commits today (UTC-3)
+  const UTC_MINUS_3 = -3 * 60 * 60 * 1000
+  const nowUtc3 = new Date(Date.now() + UTC_MINUS_3)
+  const todayStartUtc3 = new Date(Date.UTC(
+    nowUtc3.getUTCFullYear(),
+    nowUtc3.getUTCMonth(),
+    nowUtc3.getUTCDate()
+  ) - UTC_MINUS_3)
+
+  const commitsToday = await Commit.countDocuments({
+    githubId: session.user.githubId,
+    createdAt: { $gte: todayStartUtc3 },
+  })
+
+  // Real GitHub data (for firstCommitAt / lastCommitAt only)
   let repoStats = {
-    totalCommits: 0,
-    commitsToday: 0,
     firstCommitAt: null as string | null,
     lastCommitAt: null as string | null,
   }
 
   try {
-    repoStats = await getRepoStats(session.user.accessToken, session.user.username, user.repoName)
+    const stats = await getRepoStats(session.user.accessToken, session.user.username, user.repoName)
+    repoStats.firstCommitAt = stats.firstCommitAt
+    repoStats.lastCommitAt = stats.lastCommitAt
   } catch (err) {
     if (err instanceof Error && err.message === "REPO_NOT_FOUND") {
       await User.findOneAndUpdate(
@@ -62,15 +76,14 @@ export async function GET() {
       )
       return NextResponse.json({ repoDeleted: true }, { status: 404 })
     }
-    repoStats.totalCommits = user.totalCommits
   }
 
   return NextResponse.json({
     repoName: user.repoName,
     repoUrl: `https://github.com/${session.user.username}/${user.repoName}`,
     isPrivate: true,
-    totalCommits: repoStats.totalCommits,
-    commitsToday: repoStats.commitsToday,
+    totalCommits: commitlyTotal,
+    commitsToday,
     commitlyTotal,
     firstCommitAt: repoStats.firstCommitAt,
     lastCommitAt: repoStats.lastCommitAt,
