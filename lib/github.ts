@@ -72,6 +72,21 @@ export async function createPrivateRepo(
 
   const repo = await res.json()
 
+  // Set homepage
+  try {
+    await fetch(`${GITHUB_API}/repos/${repo.full_name}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        Accept: "application/vnd.github+json",
+      },
+      body: JSON.stringify({ homepage: "https://commitly.audibert.dev" }),
+    })
+  } catch {
+    // Non-critical
+  }
+
   // Update README with custom Commitly content
   try {
     const readmeRes = await fetch(`${GITHUB_API}/repos/${repo.full_name}/contents/README.md`, {
