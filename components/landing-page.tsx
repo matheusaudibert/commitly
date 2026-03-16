@@ -13,7 +13,7 @@ export function LandingPage() {
     <div className="flex min-h-screen flex-col text-foreground">
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-sm">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+        <div className="mx-auto flex py-4 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2 text-sm font-semibold">
             <GitBranch className="size-4 text-primary" />
             Commitly

@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
-import { GitBranch, LogOut } from "lucide-react"
+import { GitBranch, LogOut, TriangleAlert } from "lucide-react"
+import Link from "next/link"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -163,34 +164,34 @@ export function DashboardView({ username, avatarUrl }: DashboardViewProps) {
     <div className="flex flex-1 flex-col bg-background lg:overflow-hidden">
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-sm">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-          <div className="flex items-center gap-2 text-sm font-semibold">
-            <GitBranch className="size-4 text-primary " />
+        <div className="mx-auto flex py-4 max-w-6xl items-center justify-between px-6">
+          <Link href="/" className="flex items-center gap-2 text-sm font-semibold hover:opacity-80 transition-opacity cursor-pointer">
+            <GitBranch className="size-4 text-primary" />
             Commitly
-          </div>
+          </Link>
 
           <div className="flex items-center gap-3">
             <a
               href={`https://github.com/${username}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               <Avatar className="size-6">
                 <AvatarImage src={avatarUrl} alt={username} />
                 <AvatarFallback>{username?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
               </Avatar>
-              <span className="hidden sm:inline">{username}</span>
+              <span className="hidden sm:inline cursor-pointer">{username}</span>
             </a>
             <ThemeToggle />
             <Button
               variant="ghost"
               size="sm"
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="gap-1.5 text-muted-foreground hover:text-foreground"
+              className="gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer"
             >
               <LogOut className="size-3.5" />
-              <span className="hidden sm:inline text-xs">Sair</span>
+              <span className="hidden sm:inline cursor-pointer text-xs">Sair</span>
             </Button>
           </div>
         </div>
@@ -229,6 +230,13 @@ export function DashboardView({ username, avatarUrl }: DashboardViewProps) {
 
           {/* Right: repo sidebar */}
           <RepoSidebar repoInfo={repoInfo} username={username} streakInfo={streakInfo} />
+
+          <div className="mx-auto w-full max-w-6xl px-4 pb-3 sm:px-6">
+            <p className="flex items-center gap-1.5 text-xs text-red-400/60">
+              <TriangleAlert className="size-3 shrink-0" />
+              Se o repositório conectado for deletado, todos os commits serão apagados da sua conta.
+            </p>
+          </div>
         </div>
       </main>
       <Footer />

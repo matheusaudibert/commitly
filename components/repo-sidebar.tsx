@@ -71,17 +71,17 @@ export function RepoSidebar({ repoInfo, username, streakInfo }: RepoSidebarProps
             href={repoInfo.repoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+            className="shrink-0 cursor-pointer text-muted-foreground transition-colors hover:text-foreground"
           >
-            <ExternalLink className="size-3.5" />
+            <ExternalLink className="cursor-pointer size-3.5" />
           </a>
         </div>
 
-        {/* Private badge */}
+        {/* Private/Public badge */}
         <div className="mb-4 flex items-center gap-1.5">
           <Badge variant="secondary" className="gap-1 text-xs">
             <Lock className="size-2.5" />
-            Privado
+            {repoInfo.isPrivate ? "Privado" : "Público"}
           </Badge>
         </div>
 
@@ -164,8 +164,8 @@ function Row({
           highlight
             ? "font-semibold tabular-nums"
             : mono
-            ? "font-mono text-muted-foreground"
-            : "text-foreground/80"
+              ? "font-mono text-muted-foreground"
+              : "text-foreground/80"
         }
       >
         {value}

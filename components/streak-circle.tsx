@@ -102,24 +102,25 @@ export function StreakCircle({ streakInfo }: StreakCircleProps) {
               <p className="text-xs text-muted-foreground">Nenhum streak ativo</p>
             )}
 
-            {/* Last commit repo */}
-            {streakInfo.lastCommitRepo && (
-              <div className="mt-3 w-full px-1">
-                <p className="mb-1 text-[11px] text-muted-foreground">Último commit</p>
-                <a
-                  href={`https://github.com/${streakInfo.lastCommitRepo}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-[11px] font-mono text-foreground/80 hover:text-foreground transition-colors truncate"
-                >
-                  <GitCommit className="size-3 shrink-0 text-muted-foreground" />
-                  <span className="truncate">{streakInfo.lastCommitRepo}</span>
-                </a>
-              </div>
-            )}
           </>
         )}
       </div>
+
+      {/* Last commit repo */}
+      {streakInfo?.lastCommitRepo && (
+        <div className="w-full px-1 self-start mt-1">
+          <p className="mb-1 text-[11px] text-muted-foreground">Último commit</p>
+          <a
+            href={`https://github.com/${streakInfo.lastCommitRepo}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-[11px] font-mono text-foreground/80 hover:text-foreground transition-colors truncate cursor-pointer "
+          >
+            <GitCommit className="cursor-pointer  size-3 shrink-0 text-muted-foreground" />
+            <span className="cursor-pointer  truncate">{streakInfo.lastCommitRepo}</span>
+          </a>
+        </div>
+      )}
     </div>
   )
 }

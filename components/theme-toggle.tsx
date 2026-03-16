@@ -13,7 +13,7 @@ export function ThemeToggle() {
   useEffect(() => setMounted(true), [])
 
   if (!mounted) {
-    return <Button variant="ghost" size="sm" className="size-8 p-0 opacity-0" disabled />
+    return <Button variant="ghost" size="sm" className="cursor-pointer size-8 p-0 opacity-0" disabled />
   }
 
   const toggle = () => {
@@ -26,7 +26,7 @@ export function ThemeToggle() {
     <Button
       variant="ghost"
       size="sm"
-      className="size-8 p-0 text-muted-foreground hover:text-foreground"
+      className="size-8 p-0 text-muted-foreground hover:text-foreground cursor-pointer"
       onClick={toggle}
       aria-label="Alternar tema"
     >
