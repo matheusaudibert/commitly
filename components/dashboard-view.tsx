@@ -234,7 +234,7 @@ export function DashboardView({ username, avatarUrl }: DashboardViewProps) {
           <div className="mx-auto w-full max-w-6xl px-4 pb-3 sm:px-6">
             <p className="flex items-center gap-1.5 text-xs text-red-400/60">
               <TriangleAlert className="size-3 shrink-0" />
-              Se o repositório conectado for deletado, todos os commits serão apagados da sua conta.
+              Se o repositório conectado for deletado, todos os commits feitos nele deixarão de aparecer na sua atividade.
             </p>
           </div>
         </div>

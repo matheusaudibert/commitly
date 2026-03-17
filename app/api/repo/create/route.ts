@@ -66,7 +66,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     const now = new Date()
     await User.findOneAndUpdate(
       { githubId: session.user.githubId },
-      { totalCommits: 2, dailyCommitsCount: 2, dailyResetAt: now, lastCommitAt: now }
+      { totalCommits: 2, dailyCommitsCount: 2, dailyResetAt: now, lastCommitAt: null }
     )
 
     await Commit.insertMany(
