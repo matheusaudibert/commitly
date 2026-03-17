@@ -27,15 +27,6 @@ export function withAuth(handler: AuthedHandler) {
       return NextResponse.json({ error: "Invalid content type" }, { status: 415 })
     }
 
-    // Origin check — only allow requests from the same app
-    const appUrl = process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? ""
-    if (appUrl) {
-      const origin = req.headers.get("origin") ?? req.headers.get("referer") ?? ""
-      if (origin && !origin.startsWith(appUrl)) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-      }
-    }
-
     return handler(req, session)
   }
 }
