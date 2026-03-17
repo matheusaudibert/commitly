@@ -26,7 +26,14 @@ export async function connectDB(): Promise<typeof mongoose> {
   if (cache.conn) return cache.conn
 
   if (!cache.promise) {
-    cache.promise = mongoose.connect(MONGODB_URI).then((m) => m)
+    cache.promise = mongoose.connect(MONGODB_URI).then(async (m) => {
+      try {
+        await m.connection.db?.collection("users").dropIndex("githubUsername_1")
+      } catch {
+        // Index doesn't exist, ignore
+      }
+      return m
+    })
   }
 
   cache.conn = await cache.promise
