@@ -21,6 +21,7 @@ export async function GET() {
   }
 
   // Verify repo by ID (handles renames and deletions)
+  let isPrivate = true
   if (user.repoId) {
     try {
       const repoById = await getRepoById(session.user.accessToken, user.repoId)
@@ -38,6 +39,7 @@ export async function GET() {
         )
         user.repoName = repoById.name
       }
+      isPrivate = repoById.private
     } catch { /* if lookup fails, proceed with stored name */ }
   }
 
@@ -81,7 +83,7 @@ export async function GET() {
   return NextResponse.json({
     repoName: user.repoName,
     repoUrl: `https://github.com/${session.user.username}/${user.repoName}`,
-    isPrivate: true,
+    isPrivate,
     totalCommits: commitlyTotal,
     commitsToday,
     commitlyTotal,

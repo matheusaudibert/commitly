@@ -22,7 +22,7 @@ interface ChangesJson {
 export async function getRepoById(
   accessToken: string,
   repoId: number
-): Promise<{ id: number; name: string; html_url: string } | null> {
+): Promise<{ id: number; name: string; html_url: string; private: boolean } | null> {
   const res = await fetch(`${GITHUB_API}/repositories/${repoId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -118,7 +118,7 @@ export async function createPrivateRepo(
           Accept: "application/vnd.github+json",
         },
         body: JSON.stringify({
-          message: "chore: init commitly repo",
+          message: "📦 chore: criação do repositório",
           content: Buffer.from(content).toString("base64"),
           sha: readmeFile.sha,
         }),
