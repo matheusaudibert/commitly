@@ -18,7 +18,7 @@ const fontMono = Geist_Mono({
 
 export const metadata = {
   title: "Commitly",
-  description: "Build your GitHub streak, one commit at a time.",
+  description: "Faça commits rapidamente, direto do navegador",
 }
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="pt-BR"
       suppressHydrationWarning
       className={cn("antialiased", fontMono.variable, "font-sans", fontSans.variable)}
     >

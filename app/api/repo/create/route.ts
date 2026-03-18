@@ -45,39 +45,30 @@ export const POST = withAuth(async (req: NextRequest, session) => {
       { new: true }
     )
 
-    // Push 2 initial commits made via commitly
-    const initialCommits = [
-      "feat: repositório inicializado via commitly",
-      "chore: pronto para registrar seus commits",
-    ]
+    // Push 1 initial commit made via commitly
+    const initialMessage = "📦 chore: adição do arquivo 'changes.json'"
 
-    const commitShas: string[] = []
-    for (const [i, message] of initialCommits.entries()) {
-      const sha = await pushCommit(
-        session.user.accessToken,
-        session.user.username,
-        repo.name,
-        message,
-        i + 1
-      )
-      commitShas.push(sha)
-    }
+    const commitSha = await pushCommit(
+      session.user.accessToken,
+      session.user.username,
+      repo.name,
+      initialMessage,
+      1
+    )
 
     const now = new Date()
     await User.findOneAndUpdate(
       { githubId: session.user.githubId },
-      { totalCommits: 2, dailyCommitsCount: 2, dailyResetAt: now, lastCommitAt: null }
+      { totalCommits: 1, dailyCommitsCount: 1, dailyResetAt: now, lastCommitAt: null }
     )
 
-    await Commit.insertMany(
-      initialCommits.map((message, i) => ({
-        userId: user!._id,
-        githubId: session.user.githubId,
-        message,
-        commitSha: commitShas[i],
-        sequence: i + 1,
-      }))
-    )
+    await Commit.insertMany([{
+      userId: user!._id,
+      githubId: session.user.githubId,
+      message: initialMessage,
+      commitSha,
+      sequence: 1,
+    }])
 
     return NextResponse.json({ repoName: repo.name, repoUrl: repo.html_url })
   } catch (err) {
