@@ -3,7 +3,8 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
-import { FolderGit2, GitBranch, Lock, ArrowRight, Loader2, CheckCircle, LogOut } from "lucide-react"
+import { FolderGit2, Lock, ArrowRight, Loader2, CheckCircle, LogOut } from "lucide-react"
+import Image from "next/image"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -75,8 +76,8 @@ export function SetupPage({ username, avatarUrl }: SetupPageProps) {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-sm">
         <div className="mx-auto flex py-4 max-w-6xl items-center justify-between px-6">
-          <div className="flex items-center gap-2 text-sm font-semibold">
-            <GitBranch className="size-4 text-primary" />
+          <div className="flex items-center gap-2 text-sl font-semibold">
+            <Image src="/logo.png" alt="Commitly" width={20} height={20} className="invert-0 dark:invert" />
             Commitly
           </div>
           <div className="flex items-center gap-3">

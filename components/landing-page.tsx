@@ -1,7 +1,8 @@
 "use client"
 
 import { signIn } from "next-auth/react"
-import { GitBranch, Lock, Zap, Shield } from "lucide-react"
+import { Lock, Zap, Shield } from "lucide-react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage } from "@/components/ui/avatar"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -14,8 +15,8 @@ export function LandingPage() {
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-sm">
         <div className="mx-auto flex py-4 max-w-6xl items-center justify-between px-6">
-          <div className="flex items-center gap-2 text-sm font-semibold">
-            <GitBranch className="size-4 text-primary" />
+          <div className="flex items-center gap-2 text-sl font-semibold">
+            <Image src="/logo.png" alt="Commitly" width={20} height={20} className="invert-0 dark:invert" />
             Commitly
           </div>
           <div className="flex items-center gap-3">
