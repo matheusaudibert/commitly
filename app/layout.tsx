@@ -19,6 +19,9 @@ const fontMono = Geist_Mono({
 export const metadata = {
   title: "Commitly",
   description: "Faça commits rapidamente, direto do navegador",
+  icons: {
+    icon: "/icon.ico",
+  },
 }
 
 export default function RootLayout({
