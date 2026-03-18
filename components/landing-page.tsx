@@ -56,11 +56,11 @@ export function LandingPage() {
 
           <h1 className="mb-4 text-4xl font-semibold tracking-tight sm:text-5xl">
             Mantenha seu streak {" "}
-            <span className="text-green-500"><i>ativo</i></span>
+            <span className="text-green-500">ativo</span>
           </h1>
 
           <p className="mb-8 max-w-md text-base text-muted-foreground leading-relaxed">
-            Conecte seu GitHub, crie um repositório privado e faça commits reais direto pelo navegador.
+            Faça commits rapidamente, direto pelo navegador
           </p>
 
           <Button size="lg" onClick={handleLogin} className="mb-3 h-11 gap-2 px-8 hover:bg-primary/90 dark:hover:bg-primary/90">
