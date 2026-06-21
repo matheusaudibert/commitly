@@ -48,7 +48,7 @@ export async function createPrivateRepo(
     body: JSON.stringify({
       name: repoName,
       private: true,
-      description: "Repositório gerenciado pelo Commitly. Criado com ❤️ por Audibert",
+      description: "Repositório gerenciado pelo Commitly",
       auto_init: true,
     }),
   })
