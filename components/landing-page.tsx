@@ -52,7 +52,7 @@ export function LandingPage() {
         <div className="flex flex-col items-center">
           <div className="mb-6 flex flex-col items-center gap-3">
             <AvatarCircles numPeople={99} avatarUrls={AVATARS} />
-            <p className="text-base text-muted-foreground">Junte-se a diversos outros <i>devs</i></p>
+            <p className="text-base text-muted-foreground">Junte-se a diversos outros desenvolvedores</p>
           </div>
 
           <h1 className="mb-5 text-5xl font-semibold tracking-tight sm:text-6xl md:text-7xl">
