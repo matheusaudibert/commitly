@@ -12,9 +12,18 @@ import { cn } from "@/lib/utils"
 
 const REPO_URL = "https://github.com/matheusaudibert/commitly"
 
-const AVATARS = Array.from({ length: 6 }, () => ({
-  imageUrl: "https://github.com/matheusaudibert.png",
-  profileUrl: "https://github.com/matheusaudibert",
+const CONTRIBUTORS = [
+  "matheusaudibert",
+  "guithepc",
+  "jvbsz",
+  "Gildaciolopes",
+  "willianfigueiredodev",
+  "vsouzx",
+]
+
+const AVATARS = CONTRIBUTORS.map((username) => ({
+  imageUrl: `https://github.com/${username}.png`,
+  profileUrl: `https://github.com/${username}`,
 }))
 
 export function LandingPage() {
