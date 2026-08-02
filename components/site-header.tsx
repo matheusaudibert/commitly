@@ -39,7 +39,7 @@ export function SiteHeader({
   return (
     <header
       className={cn(
-        "z-40 bg-transparent",
+        "z-40 bg-transparent  backdrop-blur-xl",
         position === "fixed" ? "fixed top-0 right-0 left-0" : "sticky top-0",
         className
       )}
