@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="border-t border-border/40 px-6 py-6">
+    <footer className="bg-transparent px-6 py-6">
       <p className="text-center text-xs text-muted-foreground">
         Projeto open source desenvolvido por{" "}
         <a href="https://github.com/matheusaudibert" target="_blank" rel="noopener noreferrer" className="text-foreground/80 font-medium underline underline-offset-2 hover:text-foreground transition-colors">

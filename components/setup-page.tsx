@@ -4,10 +4,10 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { FolderGit2, Lock, ArrowRight, Loader2, CheckCircle, LogOut } from "lucide-react"
-import Image from "next/image"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { SiteHeader } from "@/components/site-header"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Footer } from "@/components/footer"
 
@@ -74,38 +74,30 @@ export function SetupPage({ username, avatarUrl }: SetupPageProps) {
   return (
     <div className="flex flex-1 flex-col bg-background">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-sm">
-        <div className="mx-auto flex py-4 max-w-6xl items-center justify-between px-6">
-          <div className="flex items-center gap-2 text-sl font-semibold">
-            <Image src="/logo.png" alt="Commitly" width={20} height={20} className="invert-0 dark:invert" />
-            Commitly
-          </div>
-          <div className="flex items-center gap-3">
-            <a
-              href={`https://github.com/${username}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <Avatar className="size-6">
-                <AvatarImage src={avatarUrl} alt={username} />
-                <AvatarFallback>{username?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
-              </Avatar>
-              <span className="hidden sm:inline">{username}</span>
-            </a>
-            <ThemeToggle />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="gap-1.5 text-muted-foreground hover:text-foreground"
-            >
-              <LogOut className="size-3.5" />
-              <span className="hidden sm:inline text-xs">Sair</span>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <SiteHeader position="fixed">
+        <a
+          href={`https://github.com/${username}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <Avatar className="size-7">
+            <AvatarImage src={avatarUrl} alt={username} />
+            <AvatarFallback>{username?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
+          </Avatar>
+          <span className="hidden sm:inline">{username}</span>
+        </a>
+        <ThemeToggle />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => signOut({ callbackUrl: "/" })}
+          className="gap-1.5 text-muted-foreground hover:text-foreground"
+        >
+          <LogOut className="size-3.5" />
+          <span className="hidden sm:inline text-xs">Sair</span>
+        </Button>
+      </SiteHeader>
 
       <div className="flex flex-1 flex-col items-center justify-center px-6">
         <div className="w-full max-w-md">

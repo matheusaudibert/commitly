@@ -1,13 +1,23 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Activity } from "lucide-react"
+import { calcStreak, todayKey } from "@/lib/streak"
 
-const CELL = 11
-const GAP  = 3
-const STEP = CELL + GAP
+/**
+ * O calendário de contribuições do GitHub leva alguns segundos para refletir um
+ * commit recém-criado. Depois de commitar, refazemos a busca nesses intervalos
+ * até o servidor confirmar o que já está pintado de forma otimista.
+ */
+const RECONCILE_DELAYS_MS = [1500, 4000, 8000, 15000]
+
+/** Largura preferida da célula. O grid encolhe abaixo disso para caber no container. */
+const CELL_MAX = 11
+/** Abaixo disso os quadradinhos viram poeira; nesse ponto deixamos rolar. */
+const CELL_MIN = 5
+const GAP = 3
 
 const MONTHS_PT = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]
 const DAYS_PT   = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"]
@@ -54,31 +64,96 @@ function getMonthLabels(weeks: Date[][]) {
 
 interface ActivityGridProps {
   refreshKey?: number
+  /**
+   * Commits feitos pelo painel hoje que o GitHub pode ainda não estar
+   * reportando. São somados ao que veio da API para o feedback ser imediato.
+   */
+  pendingToday?: number
   onStreakChange?: (streak: number, startDate: string | null, endDate: string | null, lastCommitRepo: string | null) => void
 }
 
-export function ActivityGrid({ refreshKey = 0, onStreakChange }: ActivityGridProps) {
+export function ActivityGrid({ refreshKey = 0, pendingToday = 0, onStreakChange }: ActivityGridProps) {
   const [counts, setCounts] = useState<Record<string, number> | null>(null)
-  const [total, setTotal]   = useState(0)
+  const [lastCommitRepo, setLastCommitRepo] = useState<string | null>(null)
+  const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
+  const [availWidth, setAvailWidth] = useState(0)
+
+  useEffect(() => {
+    if (!scrollEl) return
+    const observer = new ResizeObserver(([entry]) => {
+      setAvailWidth(entry.contentRect.width)
+    })
+    observer.observe(scrollEl)
+    return () => observer.disconnect()
+  }, [scrollEl])
 
   const fetchActivity = useCallback(async () => {
     try {
-      const res = await fetch("/api/activity")
+      // cache: "no-store" para que um refetch logo após o commit não seja
+      // servido da cache do browser com os dados de antes.
+      const res = await fetch("/api/activity", { cache: "no-store" })
       if (!res.ok) return
-      const data: { counts: Record<string, number>; streak: number; streakStartDate: string | null; streakEndDate: string | null; lastCommitRepo: string | null } = await res.json()
+      const data: { counts: Record<string, number>; lastCommitRepo: string | null } = await res.json()
       setCounts(data.counts)
-      setTotal(Object.values(data.counts).reduce((a, b) => a + b, 0))
-      onStreakChange?.(data.streak, data.streakStartDate, data.streakEndDate, data.lastCommitRepo)
+      setLastCommitRepo(data.lastCommitRepo)
     } catch { /* silent */ }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => { fetchActivity() }, [fetchActivity, refreshKey])
+
+  // Após um commit, o GitHub ainda não devolve a contribuição na hora.
+  // Reconsulta em intervalos crescentes até ele alcançar o estado otimista.
+  const isFirstRender = useRef(true)
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    const timers = RECONCILE_DELAYS_MS.map((delay) =>
+      setTimeout(() => { fetchActivity() }, delay)
+    )
+    return () => timers.forEach(clearTimeout)
+  }, [refreshKey, fetchActivity])
+
+  // Enquanto o GitHub não propaga, projetamos os commits feitos pelo painel.
+  // Math.max evita contagem dobrada quando ele finalmente alcança.
+  const effectiveCounts = counts && (() => {
+    if (pendingToday <= 0) return counts
+    const key = todayKey()
+    return { ...counts, [key]: Math.max(counts[key] ?? 0, pendingToday) }
+  })()
+
+  const total = effectiveCounts
+    ? Object.values(effectiveCounts).reduce((a, b) => a + b, 0)
+    : 0
+
+  // Recalcula o streak com a mesma regra do servidor (lib/streak), agora
+  // considerando o commit otimista — senão ele só subiria no reload.
+  useEffect(() => {
+    if (!effectiveCounts) return
+    const { streak, streakStartDate, streakEndDate } = calcStreak(effectiveCounts)
+    onStreakChange?.(streak, streakStartDate, streakEndDate, lastCommitRepo)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [counts, pendingToday, lastCommitRepo])
 
   const today = new Date(); today.setHours(0, 0, 0, 0)
   const weeks = buildGrid(today)
   const monthLabels = getMonthLabels(weeks)
   const dayColW = 28
+
+  // Dimensiona a célula pelo espaço real do container em vez de fixar 11px,
+  // senão as 53 semanas estouram a largura e o container ganha scroll horizontal.
+  const step = Math.min(
+    CELL_MAX + GAP,
+    Math.max(
+      CELL_MIN + GAP,
+      Math.floor((availWidth - dayColW) / weeks.length)
+    )
+  )
+  const cell = step - GAP
+  const gridW = dayColW + weeks.length * step
+  const gridH = 16 + 7 * step + 24
+  const measured = availWidth > 0
 
   return (
     <TooltipProvider delay={100}>
@@ -89,27 +164,31 @@ export function ActivityGrid({ refreshKey = 0, onStreakChange }: ActivityGridPro
           <Activity className="size-4 text-muted-foreground" />
           <span className="text-sm font-medium">Atividade no GitHub</span>
         </div>
-        {counts !== null && (
+        {effectiveCounts != null && (
           <span className="text-xs text-muted-foreground">
             {total} contribuiç{total !== 1 ? "ões" : "ão"} no último ano
           </span>
         )}
       </div>
 
-      {counts === null ? (
+      {effectiveCounts == null ? (
         <GridSkeleton />
       ) : (
-        <div className="overflow-x-auto pb-1" style={{ WebkitOverflowScrolling: "touch" }}>
+        <div
+          ref={setScrollEl}
+          className="overflow-x-auto pb-1"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
           <div
             className="relative select-none"
-            style={{ width: dayColW + weeks.length * STEP, height: 16 + 7 * STEP + 24 }}
+            style={{ width: gridW, height: gridH, visibility: measured ? "visible" : "hidden" }}
           >
             {/* Month labels */}
             {monthLabels.map(({ col, label }) => (
               <span
                 key={`m-${col}-${label}`}
                 className="absolute top-0 text-[10px] text-muted-foreground"
-                style={{ left: dayColW + col * STEP }}
+                style={{ left: dayColW + col * step }}
               >
                 {label}
               </span>
@@ -121,7 +200,7 @@ export function ActivityGrid({ refreshKey = 0, onStreakChange }: ActivityGridPro
                 <span
                   key={day}
                   className="absolute text-[9px] leading-none text-muted-foreground"
-                  style={{ top: 16 + row * STEP + 1, left: 0 }}
+                  style={{ top: 16 + row * step + 1, left: 0 }}
                 >
                   {day}
                 </span>
@@ -132,17 +211,17 @@ export function ActivityGrid({ refreshKey = 0, onStreakChange }: ActivityGridPro
             {weeks.map((week, col) =>
               week.map((day, row) => {
                 const key    = toKey(day)
-                const count  = counts[key] ?? 0
+                const count  = effectiveCounts[key] ?? 0
                 const future = day > today
-                const x = dayColW + col * STEP
-                const y = 16 + row * STEP
+                const x = dayColW + col * step
+                const y = 16 + row * step
 
                 if (future) {
                   return (
                     <div
                       key={key}
                       className="absolute rounded-sm bg-transparent"
-                      style={{ left: x, top: y, width: CELL, height: CELL }}
+                      style={{ left: x, top: y, width: cell, height: cell }}
                     />
                   )
                 }
@@ -159,7 +238,7 @@ export function ActivityGrid({ refreshKey = 0, onStreakChange }: ActivityGridPro
                       render={
                         <div
                           className={`absolute rounded-sm cursor-default ${cellColor(count)}`}
-                          style={{ left: x, top: y, width: CELL, height: CELL }}
+                          style={{ left: x, top: y, width: cell, height: cell }}
                         />
                       }
                     />
@@ -181,7 +260,7 @@ export function ActivityGrid({ refreshKey = 0, onStreakChange }: ActivityGridPro
                 <div
                   key={n}
                   className={`rounded-sm ${cellColor(n)}`}
-                  style={{ width: CELL, height: CELL }}
+                  style={{ width: cell, height: cell }}
                 />
               ))}
               <span className="text-[10px] text-muted-foreground">Mais</span>

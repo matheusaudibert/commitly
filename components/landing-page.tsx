@@ -1,85 +1,92 @@
 "use client"
 
 import { signIn } from "next-auth/react"
-import { Lock, Zap, Shield } from "lucide-react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarGroup, AvatarGroupCount, AvatarImage } from "@/components/ui/avatar"
+import { buttonVariants } from "@/components/ui/button"
+import { AvatarCircles } from "@/components/ui/avatar-circles"
+import { RainbowButton } from "@/components/ui/rainbow-button"
+import { DotPattern } from "@/components/ui/dot-pattern"
+import { LineShadowText } from "@/components/ui/line-shadow-text"
+import { SiteHeader } from "@/components/site-header"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { cn } from "@/lib/utils"
+
+const REPO_URL = "https://github.com/matheusaudibert/commitly"
+
+const AVATARS = Array.from({ length: 6 }, () => ({
+  imageUrl: "https://github.com/matheusaudibert.png",
+  profileUrl: "https://github.com/matheusaudibert",
+}))
 
 export function LandingPage() {
   const handleLogin = () => signIn("github", { callbackUrl: "/" })
 
   return (
-    <div className="flex min-h-screen flex-col text-foreground">
+    <div className="relative flex min-h-screen flex-col text-foreground">
+      {/* Animated background */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <DotPattern
+          id="hero-dots"
+          width={28}
+          height={28}
+          cr={1.1}
+          className="text-foreground/25 [mask-image:radial-gradient(ellipse_60%_60%_at_50%_45%,black,transparent)]"
+        />
+      </div>
+
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-sm">
-        <div className="mx-auto flex py-4 max-w-6xl items-center justify-between px-6">
-          <div className="flex items-center gap-2 text-sl font-semibold">
-            <Image src="/logo.png" alt="Commitly" width={20} height={20} className="invert-0 dark:invert" />
-            Commitly
-          </div>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Button size="sm" onClick={handleLogin} className="gap-2 hover:bg-primary/90 dark:hover:bg-primary/90">
-              <GithubIcon className="size-4" />
-              Entrar com GitHub
-            </Button>
-          </div>
-        </div>
-      </header>
+      <SiteHeader>
+        <ThemeToggle />
+      </SiteHeader>
 
       {/* Hero */}
       <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
         <div className="flex flex-col items-center">
-          <div className="mb-5 flex flex-col items-center gap-2">
-            <AvatarGroup>
-              <Avatar size="lg">
-                <AvatarImage src="https://github.com/Gildaciolopes.png" alt="@gildaciolopes" />
-                <AvatarFallback>GL</AvatarFallback>
-              </Avatar>
-              <Avatar size="lg">
-                <AvatarImage src="https://github.com/guithepc.png" alt="@guithepc" />
-                <AvatarFallback>GP</AvatarFallback>
-              </Avatar>
-              <Avatar size="lg">
-                <AvatarImage src="https://github.com/caio-andres.png" alt="@caio-andres" />
-                <AvatarFallback>CA</AvatarFallback>
-              </Avatar>
-              <Avatar size="lg">
-                <AvatarImage src="https://github.com/kalellz.png" alt="@kalellz" />
-                <AvatarFallback>KZ</AvatarFallback>
-              </Avatar>
-              <AvatarGroupCount>+99</AvatarGroupCount>
-            </AvatarGroup>
-            <p className="text-sm text-muted-foreground">Junte-se a diversos outros <i>devs</i></p>
+          <div className="mb-6 flex flex-col items-center gap-3">
+            <AvatarCircles numPeople={99} avatarUrls={AVATARS} />
+            <p className="text-base text-muted-foreground">Junte-se a diversos outros <i>devs</i></p>
           </div>
 
-          <h1 className="mb-4 text-4xl font-semibold tracking-tight sm:text-5xl">
+          <h1 className="mb-5 text-5xl font-semibold tracking-tight sm:text-6xl md:text-7xl">
             Mantenha seu streak {" "}
-            <span className="text-green-500">ativo</span>
+            <LineShadowText className="text-green-500" shadowColor="#16a34a">
+              ativo
+            </LineShadowText>
           </h1>
 
-          <p className="mb-8 max-w-md text-base text-muted-foreground leading-relaxed">
-            Faça commits rapidamente, direto pelo navegador
+          <p className="mb-8 max-w-xl text-lg text-muted-foreground leading-relaxed sm:text-xl">
+            Conecte seu GitHub, crie um repositório privado e faça commits reais direto pelo navegador.
           </p>
 
-          <Button size="lg" onClick={handleLogin} className="mb-3 h-11 gap-2 px-8 hover:bg-primary/90 dark:hover:bg-primary/90">
-            <GithubIcon className="size-4" />
-            Começar com GitHub
-          </Button>
+          <div className="flex flex-col items-center gap-3 sm:flex-row">
+            <RainbowButton size="lg" onClick={handleLogin} className="h-12 gap-2 px-8 text-base">
+              <GithubIcon className="size-5" />
+              Começar com GitHub
+            </RainbowButton>
+            <a
+              href={REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "h-12 gap-2 px-8 text-base",
+                "dark:bg-background dark:hover:bg-muted"
+              )}
+            >
+              Ver repositório
+            </a>
+          </div>
         </div>
       </main>
 
       {/* Glass footer */}
-      <footer className="border-t border-border/40 px-6 py-6">
-        <p className="text-center text-xs text-muted-foreground">
+      <footer className="bg-transparent px-6 py-6">
+        <p className="text-center text-sm text-muted-foreground">
           Projeto open source desenvolvido por{" "}
           <a href="https://github.com/matheusaudibert" target="_blank" rel="noopener noreferrer" className="font-medium text-foreground/80 underline underline-offset-2 transition-colors hover:text-foreground">
             Matheus Audibert
           </a>
           .{" "}Acesse o repositório&nbsp;
-          <a href="https://github.com/matheusaudibert/commitly" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 transition-colors hover:text-foreground">
+          <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 transition-colors hover:text-foreground">
             aqui
           </a>
           &nbsp;e considere deixar uma estrela ⭐

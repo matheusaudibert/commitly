@@ -4,8 +4,6 @@ import { useEffect, useState, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { LogOut, TriangleAlert } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -13,8 +11,10 @@ import { CommitForm } from "@/components/commit-form"
 import { RepoSidebar } from "@/components/repo-sidebar"
 import { CommitStats } from "@/components/commit-stats"
 import { ActivityGrid } from "@/components/activity-grid"
+import { SiteHeader } from "@/components/site-header"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Footer } from "@/components/footer"
+import { todayKey } from "@/lib/streak"
 
 interface CommitStatus {
   dailyCommitsCount: number
@@ -48,6 +48,9 @@ export function DashboardView({ username, avatarUrl }: DashboardViewProps) {
   const [repoInfo, setRepoInfo] = useState<RepoInfo | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [activityKey, setActivityKey] = useState(0)
+  // Commits feitos pelo painel hoje. O calendário do GitHub demora a reportá-los,
+  // então o grid e o streak os projetam até a API confirmar.
+  const [pending, setPending] = useState<{ date: string; count: number }>({ date: todayKey(), count: 0 })
   const [streakInfo, setStreakInfo] = useState<{ days: number; startDate: string | null; endDate: string | null; lastCommitRepo: string | null } | null>(null)
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -126,6 +129,15 @@ export function DashboardView({ username, avatarUrl }: DashboardViewProps) {
         return
       }
 
+      // Projeta o commit no grid/streak antes do GitHub propagar. A data é
+      // revalidada para o contador não vazar de um dia para o outro se a aba
+      // ficar aberta passando da meia-noite.
+      setPending((prev) => {
+        const key = todayKey()
+        return prev.date === key
+          ? { date: key, count: prev.count + 1 }
+          : { date: key, count: 1 }
+      })
       setActivityKey((k) => k + 1)
 
       const newTotal = (repoInfo?.totalCommits ?? 0) + 1
@@ -164,39 +176,30 @@ export function DashboardView({ username, avatarUrl }: DashboardViewProps) {
   return (
     <div className="flex flex-1 flex-col bg-background lg:overflow-hidden">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur-sm">
-        <div className="mx-auto flex py-4 max-w-6xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2 text-sl font-semibold hover:opacity-80 transition-opacity cursor-pointer">
-            <Image src="/logo.png" alt="Commitly" width={20} height={20} className="invert-0 dark:invert" />
-            Commitly
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <a
-              href={`https://github.com/${username}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <Avatar className="size-6">
-                <AvatarImage src={avatarUrl} alt={username} />
-                <AvatarFallback>{username?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
-              </Avatar>
-              <span className="hidden sm:inline cursor-pointer">{username}</span>
-            </a>
-            <ThemeToggle />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer"
-            >
-              <LogOut className="size-3.5" />
-              <span className="hidden sm:inline cursor-pointer text-xs">Sair</span>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <SiteHeader brandHref="/">
+        <a
+          href={`https://github.com/${username}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <Avatar className="size-7">
+            <AvatarImage src={avatarUrl} alt={username} />
+            <AvatarFallback>{username?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
+          </Avatar>
+          <span className="hidden sm:inline cursor-pointer">{username}</span>
+        </a>
+        <ThemeToggle />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => signOut({ callbackUrl: "/" })}
+          className="gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer"
+        >
+          <LogOut className="size-3.5" />
+          <span className="hidden sm:inline cursor-pointer text-xs">Sair</span>
+        </Button>
+      </SiteHeader>
 
       {/* Main */}
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-4 sm:px-6 sm:py-5 lg:overflow-hidden">
@@ -222,6 +225,7 @@ export function DashboardView({ username, avatarUrl }: DashboardViewProps) {
             <div className="hidden lg:block">
               <ActivityGrid
                 refreshKey={activityKey}
+                pendingToday={pending.date === todayKey() ? pending.count : 0}
                 onStreakChange={(days, startDate, endDate, lastCommitRepo) =>
                   setStreakInfo({ days, startDate, endDate, lastCommitRepo })
                 }

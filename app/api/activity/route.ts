@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/auth"
+import { calcStreak } from "@/lib/streak"
 
 const GITHUB_GRAPHQL = "https://api.github.com/graphql"
 
@@ -19,53 +20,6 @@ const CONTRIBUTION_QUERY = `
     }
   }
 `
-
-interface StreakResult {
-  streak: number
-  streakStartDate: string | null
-  streakEndDate: string | null
-}
-
-function calcStreak(counts: Record<string, number>): StreakResult {
-  const utc3 = new Date(Date.now() - 3 * 60 * 60 * 1000)
-
-  function dateStr(d: Date): string {
-    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`
-  }
-
-  function prevDay(d: Date): Date {
-    const p = new Date(d)
-    p.setUTCDate(p.getUTCDate() - 1)
-    return p
-  }
-
-  const todayStr = dateStr(utc3)
-  const yesterdayStr = dateStr(prevDay(utc3))
-
-  let endDate: Date
-  if ((counts[todayStr] ?? 0) > 0) {
-    endDate = utc3
-  } else if ((counts[yesterdayStr] ?? 0) > 0) {
-    endDate = prevDay(utc3)
-  } else {
-    return { streak: 0, streakStartDate: null, streakEndDate: null }
-  }
-
-  const streakEndDate = dateStr(endDate)
-  let streak = 0
-  let current = endDate
-
-  while ((counts[dateStr(current)] ?? 0) > 0) {
-    streak++
-    current = prevDay(current)
-  }
-
-  // current is now the day before streak started; add one day back
-  const streakFirstDay = new Date(current)
-  streakFirstDay.setUTCDate(streakFirstDay.getUTCDate() + 1)
-
-  return { streak, streakStartDate: dateStr(streakFirstDay), streakEndDate }
-}
 
 export async function GET() {
   const session = await auth()
