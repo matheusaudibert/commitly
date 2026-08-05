@@ -71,9 +71,9 @@ export function RepoSidebar({ repoInfo, username, streakInfo }: RepoSidebarProps
             href={repoInfo.repoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 cursor-pointer text-muted-foreground transition-colors hover:text-foreground"
+            className="shrink-0 text-muted-foreground transition-colors hover:text-foreground"
           >
-            <ExternalLink className="cursor-pointer size-3.5" />
+            <ExternalLink className="size-3.5" />
           </a>
         </div>
 

@@ -165,11 +165,28 @@
   }
 
   a,
+  a *,
   button,
+  button *,
   [role="button"],
+  [role="button"] *,
   [type="button"],
-  [type="submit"] {
+  [type="button"] *,
+  [type="submit"],
+  [type="submit"] *,
+  label[for],
+  summary,
+  select {
     cursor: pointer;
+  }
+
+  button:disabled,
+  button:disabled *,
+  [aria-disabled="true"],
+  [aria-disabled="true"] *,
+  [data-disabled],
+  [data-disabled] * {
+    cursor: not-allowed;
   }
 
   body {

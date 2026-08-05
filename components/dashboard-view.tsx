@@ -181,23 +181,23 @@ export function DashboardView({ username, avatarUrl }: DashboardViewProps) {
           href={`https://github.com/${username}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <Avatar className="size-7">
             <AvatarImage src={avatarUrl} alt={username} />
             <AvatarFallback>{username?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
           </Avatar>
-          <span className="hidden sm:inline cursor-pointer">{username}</span>
+          <span className="hidden sm:inline">{username}</span>
         </a>
         <ThemeToggle />
         <Button
           variant="ghost"
           size="sm"
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer"
+          className="gap-1.5 text-muted-foreground hover:text-foreground"
         >
           <LogOut className="size-3.5" />
-          <span className="hidden sm:inline cursor-pointer text-xs">Sair</span>
+          <span className="hidden sm:inline text-xs">Sair</span>
         </Button>
       </SiteHeader>
 

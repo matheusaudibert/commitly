@@ -114,10 +114,10 @@ export function StreakCircle({ streakInfo }: StreakCircleProps) {
             href={`https://github.com/${streakInfo.lastCommitRepo}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-[11px] font-mono text-foreground/80 hover:text-foreground transition-colors truncate cursor-pointer "
+            className="flex items-center gap-1 text-[11px] font-mono text-foreground/80 hover:text-foreground transition-colors truncate"
           >
-            <GitCommit className="cursor-pointer  size-3 shrink-0 text-muted-foreground" />
-            <span className="cursor-pointer  truncate">{streakInfo.lastCommitRepo}</span>
+            <GitCommit className="size-3 shrink-0 text-muted-foreground" />
+            <span className="truncate">{streakInfo.lastCommitRepo}</span>
           </a>
         </div>
       )}
