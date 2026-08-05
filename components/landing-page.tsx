@@ -16,7 +16,7 @@ const CONTRIBUTORS = [
   "guithepc",
   "jvbsz",
   "Gildaciolopes",
-  "willianfigueiredodev",
+  "willradoux",
   "vsouzx",
 ]
 
