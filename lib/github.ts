@@ -133,7 +133,7 @@ export async function createPrivateRepo(
           Accept: "application/vnd.github+json",
         },
         body: JSON.stringify({
-          message: "📦 chore: criação do repositório",
+          message: "chore: criação do repositório",
           content: Buffer.from(content).toString("base64"),
           sha: readmeFile.sha,
         }),

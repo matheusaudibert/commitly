@@ -46,7 +46,7 @@ export const POST = withAuth(async (req: NextRequest, session) => {
     )
 
     // Push 1 initial commit made via commitly
-    const initialMessage = "📦 chore: adição do arquivo 'changes.json'"
+    const initialMessage = "chore: adição do arquivo 'changes.json'"
 
     const commitSha = await pushCommit(
       session.user.accessToken,
