@@ -4,7 +4,6 @@ import { signIn } from "next-auth/react"
 import { buttonVariants } from "@/components/ui/button"
 import { AvatarCircles } from "@/components/ui/avatar-circles"
 import { RainbowButton } from "@/components/ui/rainbow-button"
-import { DotPattern } from "@/components/ui/dot-pattern"
 import { LineShadowText } from "@/components/ui/line-shadow-text"
 import { SiteHeader } from "@/components/site-header"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -31,17 +30,6 @@ export function LandingPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col text-foreground">
-      {/* Animated background */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <DotPattern
-          id="hero-dots"
-          width={28}
-          height={28}
-          cr={1.1}
-          className="text-foreground/25 [mask-image:radial-gradient(ellipse_60%_60%_at_50%_45%,black,transparent)]"
-        />
-      </div>
-
       {/* Header */}
       <SiteHeader>
         <ThemeToggle />
